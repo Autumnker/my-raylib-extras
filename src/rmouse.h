@@ -62,7 +62,8 @@ namespace rmouse {
  *       value += 1;       // single-click action
  *   }
  */
-class Mouse {
+class Mouse
+{
 public:
     Mouse() = default;
     virtual ~Mouse() = default;
@@ -91,30 +92,31 @@ public:
     bool IsDown(MouseButton button) const;
 
 private:
-    struct ButtonState {
+    struct ButtonState
+    {
         // Current press info
-        Vector2 press_pos_{ 0, 0 };
-        double press_time_ = 0.0;  // GetTime() timestamp
-        bool is_down_ = false;
-        bool is_dragging_ = false;
+        Vector2 pressPos{ 0, 0 };
+        double pressTime = 0.0;  // GetTime() timestamp
+        bool isDown = false;
+        bool isDragging = false;
 
         // Drag tracking
-        Vector2 last_drag_pos_{ -1, -1 };
-        Vector2 drag_delta_{ 0, 0 };
+        Vector2 lastDragPos{ -1, -1 };
+        Vector2 dragDelta{ 0, 0 };
 
         // Release time of the previous complete click (for double-click detection)
-        double last_click_time_ = 0.0;  // GetTime() timestamp
+        double lastClickTime = 0.0;  // GetTime() timestamp
 
         // Frame-scoped event flags (reset at the start of each Update())
-        bool click_ready_ = false;
-        bool double_click_ready_ = false;
-        bool is_double_click_part_ = false;  // click_ready_ is the 2nd half of a double-click
+        bool clickReady = false;
+        bool doubleClickReady = false;
+        bool isDoubleClickPart = false;  // clickReady is the 2nd half of a double-click
     };
 
-    ButtonState left_;
-    ButtonState right_;
+    ButtonState left;
+    ButtonState right;
 
-    void UpdateButton_(ButtonState& s, MouseButton button);
+    void UpdateButton(ButtonState& s, MouseButton button);
 };
 
 } // namespace rmouse
@@ -132,119 +134,136 @@ namespace rmouse {
 // Public API
 // ------------------------------------------------------------------
 
-void Mouse::Update() {
+void Mouse::Update()
+{
     // Reset all frame-scoped flags from the previous frame so that
     // IsClicked(), IsDoubleClicked(), and GetDragDelta() can be called
     // any number of times within the same frame with consistent results.
-    left_.click_ready_       = false;
-    left_.double_click_ready_   = false;
-    left_.is_double_click_part_  = false;
-    left_.drag_delta_       = { 0, 0 };
-    right_.click_ready_      = false;
-    right_.double_click_ready_   = false;
-    right_.is_double_click_part_  = false;
-    right_.drag_delta_       = { 0, 0 };
+    left.clickReady = false;
+    left.doubleClickReady = false;
+    left.isDoubleClickPart = false;
+    left.dragDelta = { 0, 0 };
+    right.clickReady = false;
+    right.doubleClickReady = false;
+    right.isDoubleClickPart = false;
+    right.dragDelta = { 0, 0 };
 
-    UpdateButton_(left_, MOUSE_BUTTON_LEFT);
-    UpdateButton_(right_, MOUSE_BUTTON_RIGHT);
+    UpdateButton(left, MOUSE_BUTTON_LEFT);
+    UpdateButton(right, MOUSE_BUTTON_RIGHT);
 }
 
-bool Mouse::IsClicked(MouseButton button) const {
-    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left_ : right_;
+bool Mouse::IsClicked(MouseButton button) const
+{
+    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left : right;
     // Suppress the second click of a double-click pair.
-    if (s.is_double_click_part_)
+    if (s.isDoubleClickPart)
         return false;
-    return s.click_ready_;
+    return s.clickReady;
 }
 
-bool Mouse::IsDoubleClicked(MouseButton button) const {
-    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left_ : right_;
-    return s.double_click_ready_;
+bool Mouse::IsDoubleClicked(MouseButton button) const
+{
+    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left : right;
+    return s.doubleClickReady;
 }
 
-bool Mouse::IsDragging(MouseButton button) const {
-    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left_ : right_;
-    return s.is_dragging_;
+bool Mouse::IsDragging(MouseButton button) const
+{
+    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left : right;
+    return s.isDragging;
 }
 
-bool Mouse::IsDown(MouseButton button) const {
+bool Mouse::IsDown(MouseButton button) const
+{
     return ::IsMouseButtonDown(button);
 }
 
-Vector2 Mouse::GetDragDelta(MouseButton button) const {
-    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left_ : right_;
-    return s.drag_delta_;
+Vector2 Mouse::GetDragDelta(MouseButton button) const
+{
+    const ButtonState& s = (button == MOUSE_BUTTON_LEFT) ? left : right;
+    return s.dragDelta;
 }
 
 // ------------------------------------------------------------------
 // Per-button state machine (Windows-style: zero-latency click)
 // ------------------------------------------------------------------
 
-void Mouse::UpdateButton_(ButtonState& s, MouseButton button) {
+void Mouse::UpdateButton(ButtonState& s, MouseButton button)
+{
     double now = GetTime();
     float mx = ::GetMousePosition().x;
     float my = ::GetMousePosition().y;
 
     // ── 1. Press: record initial state ──
-    if (::IsMouseButtonPressed(button)) {
-        s.press_pos_ = { mx, my };
-        s.press_time_ = now;
-        s.is_down_ = true;
-        s.is_dragging_ = false;
-        s.last_drag_pos_ = { mx, my };
-        s.drag_delta_ = { 0, 0 };
+    if (::IsMouseButtonPressed(button))
+    {
+        s.pressPos = { mx, my };
+        s.pressTime = now;
+        s.isDown = true;
+        s.isDragging = false;
+        s.lastDragPos = { mx, my };
+        s.dragDelta = { 0, 0 };
     }
 
     // ── 2. Held: accumulate drag delta, detect drag start ──
-    if (::IsMouseButtonDown(button)) {
-        if (s.last_drag_pos_.x >= 0) {
-            s.drag_delta_.x += mx - s.last_drag_pos_.x;
-            s.drag_delta_.y += my - s.last_drag_pos_.y;
+    if (::IsMouseButtonDown(button))
+    {
+        if (s.lastDragPos.x >= 0)
+        {
+            s.dragDelta.x += mx - s.lastDragPos.x;
+            s.dragDelta.y += my - s.lastDragPos.y;
         }
-        s.last_drag_pos_ = { mx, my };
+        s.lastDragPos = { mx, my };
 
-        if (!s.is_dragging_) {
-            float dx = std::abs(mx - s.press_pos_.x);
-            float dy = std::abs(my - s.press_pos_.y);
-            if (dx >= DRAG_START_THRESHOLD || dy >= DRAG_START_THRESHOLD) {
-                s.is_dragging_ = true;
+        if (!s.isDragging)
+        {
+            float dx = std::abs(mx - s.pressPos.x);
+            float dy = std::abs(my - s.pressPos.y);
+            if (dx >= DRAG_START_THRESHOLD || dy >= DRAG_START_THRESHOLD)
+            {
+                s.isDragging = true;
             }
         }
     }
 
     // ── 3. Release: classify as click / double-click ──
-    if (::IsMouseButtonReleased(button)) {
-        s.is_down_     = false;
-        s.is_dragging_ = false;
-        s.last_drag_pos_ = { -1, -1 };
+    if (::IsMouseButtonReleased(button))
+    {
+        s.isDown = false;
+        s.isDragging = false;
+        s.lastDragPos = { -1, -1 };
 
-        if (!s.is_dragging_) {
-            float dx = std::abs(mx - s.press_pos_.x);
-            float dy = std::abs(my - s.press_pos_.y);
-            double duration = now - s.press_time_;
+        if (!s.isDragging)
+        {
+            float dx = std::abs(mx - s.pressPos.x);
+            float dy = std::abs(my - s.pressPos.y);
+            double duration = now - s.pressTime;
 
             // Close position + short duration -> valid click
             if (dx < CLICK_POS_TOLERANCE && dy < CLICK_POS_TOLERANCE &&
-                duration < CLICK_MAX_DURATION) {
+                duration < CLICK_MAX_DURATION)
+            {
 
                 // Check whether we are within the double-click window
-                bool in_double_window =
-                    s.last_click_time_ > 0.0 &&
-                    now - s.last_click_time_ < DOUBLE_CLICK_WINDOW;
+                bool inDoubleWindow =
+                    s.lastClickTime > 0.0 &&
+                    now - s.lastClickTime < DOUBLE_CLICK_WINDOW;
 
-                if (in_double_window) {
+                if (inDoubleWindow)
+                {
                     // Double click!  Also mark this click as the second half.
-                    s.double_click_ready_ = true;
-                    s.click_ready_ = true;
-                    s.is_double_click_part_ = true;
-                    s.last_click_time_ = 0.0;  // Reset to avoid triple-click false positive
+                    s.doubleClickReady = true;
+                    s.clickReady = true;
+                    s.isDoubleClickPart = true;
+                    s.lastClickTime = 0.0;  // Reset to avoid triple-click false positive
                 }
-                else {
+                else
+                {
                     // Standalone click (may be the first of a pair, or a true single).
                     // Fire immediately either way.
-                    s.click_ready_ = true;
-                    s.is_double_click_part_ = false;
-                    s.last_click_time_ = now;
+                    s.clickReady = true;
+                    s.isDoubleClickPart = false;
+                    s.lastClickTime = now;
                 }
             }
         }

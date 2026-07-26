@@ -16,27 +16,32 @@
 // ------------------------------------------------------------------
 // Helper: draw a simple text log on screen
 // ------------------------------------------------------------------
-struct LogLine {
+struct LogLine
+{
     std::string text;
     float lifetime = 0.0f;  // seconds remaining
 };
 
-static std::list<LogLine> g_log;
+static std::list<LogLine> gLog;
 
-static void AddLog(const char* fmt, ...) {
+static void AddLog(const char* fmt, ...)
+{
     char buf[256];
     va_list args;
     va_start(args, fmt);
     std::vsnprintf(buf, sizeof(buf), fmt, args);
     va_end(args);
 
-    g_log.push_back(LogLine{ buf,2.5f });
+    gLog.push_back(LogLine{ buf,2.5f });
 }
 
-static void DrawLog() {
+static void DrawLog()
+{
     int y = 10;
-    for (auto& log : g_log) {
-        if (log.lifetime > 0.0f) {
+    for (auto& log : gLog)
+    {
+        if (log.lifetime > 0.0f)
+        {
             DrawText(log.text.c_str(), 10, y, 18, BLACK);
             y += 20;
         }
@@ -46,7 +51,8 @@ static void DrawLog() {
 // ------------------------------------------------------------------
 // Main
 // ------------------------------------------------------------------
-int main() {
+int main()
+{
     InitWindow(800, 600, "rmouse example");
     SetTargetFPS(60);
 
@@ -54,79 +60,92 @@ int main() {
 
     // Draggable rectangle
     Rectangle rect = { 300, 250, 200, 100 };
-    bool dragging_rect = false;
+    bool draggingRect = false;
 
     // Click / double-click state for the "undo on double-click" pattern
-    Color rect_color = BLUE;
-    Color prev_rect_color = BLUE;
+    Color rectColor = BLUE;
+    Color prevRectColor = BLUE;
 
-    while (!WindowShouldClose()) {
+    while (!WindowShouldClose())
+    {
         mouse.Update();
 
         // Tick log lifetimes
         float dt = GetFrameTime();
-        for (auto it = g_log.begin(); it != g_log.end(); it++) {
-            if ((*it).lifetime > 0) {
+        for (auto it = gLog.begin(); it != gLog.end(); it++)
+        {
+            if ((*it).lifetime > 0)
+            {
                 (*it).lifetime -= dt;
             }
-            else {
-                g_log.erase(it);
+            else
+            {
+                gLog.erase(it);
             }
         }
 
         Vector2 mp = GetMousePosition();
-        bool hover_rect = CheckCollisionPointRec(mp, rect);
+        bool hoverRect = CheckCollisionPointRec(mp, rect);
 
         // ── Double-click on rect -> cycle colour ──
-        if (mouse.IsDoubleClicked(MOUSE_BUTTON_LEFT) && hover_rect) {
+        if (mouse.IsDoubleClicked(MOUSE_BUTTON_LEFT) && hoverRect)
+        {
             // Undo the colour change caused by the first click of the pair
-            rect_color = prev_rect_color;
+            rectColor = prevRectColor;
 
             // Double-click action: cycle to next colour
             Color colors[] = { BLUE, RED, GREEN, ORANGE, PURPLE, MAROON };
-            std::string colors_name[] = { "Blue", "Red", "Green", "Orange", "Purple", "Maroon" };
+            std::string colorsName[] = { "Blue", "Red", "Green", "Orange", "Purple", "Maroon" };
             static int ci = 0;
             ci = (ci + 1) % 6;
-            rect_color = colors[ci];
-            AddLog("DOUBLE-CLICK on rect  -> colour # %s", colors_name[ci].c_str());
+            rectColor = colors[ci];
+            AddLog("DOUBLE-CLICK on rect  -> colour # %s", colorsName[ci].c_str());
         }
 
         // ── Click handling ──
-        if (mouse.IsClicked(MOUSE_BUTTON_LEFT) && hover_rect) {
+        if (mouse.IsClicked(MOUSE_BUTTON_LEFT) && hoverRect)
+        {
             // Single click on rect -> darken
-            prev_rect_color = rect_color;
-            rect_color = Color{
-                (unsigned char)(rect_color.r / 2),
-                (unsigned char)(rect_color.g / 2),
-                (unsigned char)(rect_color.b / 2),
+            prevRectColor = rectColor;
+            rectColor = Color{
+                (unsigned char)(rectColor.r / 2),
+                (unsigned char)(rectColor.g / 2),
+                (unsigned char)(rectColor.b / 2),
                 255
             };
             AddLog("CLICK on rect -> darkened");
         }
-        if (mouse.IsClicked(MOUSE_BUTTON_LEFT) && !hover_rect) {
+        if (mouse.IsClicked(MOUSE_BUTTON_LEFT) && !hoverRect)
+        {
             // Click on background -> reset
-            prev_rect_color = rect_color;
-            rect_color = BLUE;
+            prevRectColor = rectColor;
+            rectColor = BLUE;
             AddLog("CLICK on background -> reset colour");
         }
 
         // ── Drag the rectangle ──
-        if (mouse.IsDragging(MOUSE_BUTTON_LEFT) && hover_rect && !dragging_rect) {
-            dragging_rect = true;
+        if (mouse.IsDragging(MOUSE_BUTTON_LEFT) && hoverRect && !draggingRect)
+        {
+            draggingRect = true;
         }
-        if (dragging_rect) {
-            if (mouse.IsDragging(MOUSE_BUTTON_LEFT)) {
+        if (draggingRect)
+        {
+            if (mouse.IsDragging(MOUSE_BUTTON_LEFT))
+            {
                 Vector2 d = mouse.GetDragDelta(MOUSE_BUTTON_LEFT);
                 rect.x += d.x;
                 rect.y += d.y;
-            } else {
-                dragging_rect = false;
+            }
+            else
+            {
+                draggingRect = false;
                 AddLog("Drag ended");
             }
         }
 
         // ── Right-click anywhere ──
-        if (mouse.IsClicked(MOUSE_BUTTON_RIGHT)) {
+        if (mouse.IsClicked(MOUSE_BUTTON_RIGHT))
+        {
             AddLog("RIGHT CLICK");
         }
 
@@ -134,7 +153,7 @@ int main() {
         BeginDrawing();
         ClearBackground(RAYWHITE);
 
-        DrawRectangleRec(rect, rect_color);
+        DrawRectangleRec(rect, rectColor);
         DrawRectangleLinesEx(rect, 2, DARKGRAY);
         DrawText("Drag me / click me", (int)rect.x + 5, (int)rect.y + 40, 24, WHITE);
 

@@ -2,12 +2,16 @@
  * rmouse example — demonstrates click, double-click (with mutual exclusion), and drag detection.
  *
  * Build (MinGW-w64 + raylib 5.5):
- *   g++ -std=c++17 main.cpp -Isrc -I../../raylib-5.5_win64_mingw-w64/include \
- *       -L../../raylib-5.5_win64_mingw-w64/lib -lraylib -lopengl32 -lgdi32 -lwinmm -o example_demo
+ * # Execute in the root directory (my-raylib-extras/)
+ * 
+ * g++ -std=c++17 examples/rmouse/main.cpp -Isrc/rmouse \
+ *     -I../raylib-5.5_win64_mingw-w64/include \
+ *     -L../raylib-5.5_win64_mingw-w64/lib \
+ *     -lraylib -lopengl32 -lgdi32 -lwinmm -o rmouse_example
  */
 
 #define RMOUSE_IMPLEMENTATION
-#include "../src/rmouse.h"
+#include "rmouse.h"
 #include <cstdarg>
 #include <cstdio>
 #include <string>

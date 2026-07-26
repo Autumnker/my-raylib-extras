@@ -5,11 +5,11 @@ setlocal
 ::  rmouse example — build & run  (MinGW-w64 + raylib 5.5)
 :: ===================================================================
 
-set "RAYLIB_DIR=..\raylib-5.5_win64_mingw-w64"
-set "SRC=examples\main.cpp"
-set "OUT=examples\example_demo.exe"
+set "RAYLIB_DIR=..\..\..\raylib-5.5_win64_mingw-w64"
+set "SRC=main.cpp"
+set "OUT=rmouse_example.exe"
 
-set "INCLUDE=-Isrc -I%RAYLIB_DIR%\include"
+set "INCLUDE=-I..\..\src\rmouse -I%RAYLIB_DIR%\include"
 set "LIB=-L%RAYLIB_DIR%\lib"
 set "LINK=-lraylib -lopengl32 -lgdi32 -lwinmm"
 set "CXXFLAGS=-std=c++17 -O2 -Wall"

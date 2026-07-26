@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(rmouse-example LANGUAGES CXX)
+project(my-raylib-extras LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -9,7 +9,7 @@ if(MSVC)
 endif()
 
 # ------------------------------------------------------------------
-# Raylib — adjust RAYLIB_DIR or let it default to the bundled version
+# Raylib — adjust RAYLIB_DIR or let it default
 # ------------------------------------------------------------------
 if(NOT DEFINED RAYLIB_DIR)
     set(RAYLIB_DIR "${CMAKE_SOURCE_DIR}/../raylib-5.5_win64_mingw-w64")
@@ -36,19 +36,36 @@ if(WIN32)
 endif()
 
 # ------------------------------------------------------------------
-# Example target
+# Helper — add a single-library example target
+#
+# Usage: add_raylib_example(rmouse)
+#
+# Expects:
+#   src/<name>/<name>.h       — the header-only library
+#   examples/<name>/main.cpp     — the example source
 # ------------------------------------------------------------------
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
-add_executable(example_demo examples/main.cpp)
+function(add_raylib_example EXAMPLE_NAME)
+    set(EXE_NAME "${EXAMPLE_NAME}_example")
+    add_executable(${EXE_NAME} examples/${EXAMPLE_NAME}/main.cpp)
 
-target_include_directories(example_demo PRIVATE
-    ${CMAKE_SOURCE_DIR}/src      # for "rmouse.h"
-    ${RAYLIB_INCLUDE}            # for "raylib.h"
-)
+    set_target_properties(${EXE_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+    )
 
-target_link_directories(example_demo PRIVATE ${RAYLIB_LIB})
+    target_include_directories(${EXE_NAME} PRIVATE
+        src/${EXAMPLE_NAME}       # for "${EXAMPLE_NAME}.h"
+        ${RAYLIB_INCLUDE}        # for "raylib.h"
+    )
 
-target_link_libraries(example_demo PRIVATE
-    raylib
-    ${RAYLIB_EXTRA_LIBS}
-)
+    target_link_directories(${EXE_NAME} PRIVATE ${RAYLIB_LIB})
+    target_link_libraries(${EXE_NAME} PRIVATE
+        raylib
+        ${RAYLIB_EXTRA_LIBS}
+    )
+endfunction()
+
+# ==================================================================
+# Examples — add one line per library below
+# ==================================================================
+add_raylib_example(rmouse)
+# add_raylib_example(rfuture)     # ← uncomment when you create src/rfuture/

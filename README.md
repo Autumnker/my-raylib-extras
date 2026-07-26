@@ -75,8 +75,8 @@ Then build — choose one of the following:
 **A) Direct compile (from project root):**
 
 ```
-g++ -std=c++17 .\rmouse\example\main.cpp -Irmouse -I./raylib-5.5_win64_mingw-w64/include \
-    -L./raylib-5.5_win64_mingw-w64/lib -lraylib -lopengl32 -lgdi32 -lwinmm -o example_demo
+g++ -std=c++17 ./examples/main.cpp -Irmouse -I../raylib-5.5_win64_mingw-w64/include \
+    -L../raylib-5.5_win64_mingw-w64/lib -lraylib -lopengl32 -lgdi32 -lwinmm -o example_demo
 ```
 
 **B) Build script (from `rmouse/`):**

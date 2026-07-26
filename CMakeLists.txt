@@ -38,6 +38,7 @@ endif()
 # ------------------------------------------------------------------
 # Example target
 # ------------------------------------------------------------------
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(example_demo examples/main.cpp)
 
 target_include_directories(example_demo PRIVATE

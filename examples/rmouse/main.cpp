@@ -76,15 +76,16 @@ int main()
 
         // Tick log lifetimes
         float dt = GetFrameTime();
-        for (auto it = gLog.begin(); it != gLog.end(); it++)
+        for (auto it = gLog.begin(); it != gLog.end();)
         {
             if ((*it).lifetime > 0)
             {
                 (*it).lifetime -= dt;
+                ++it;
             }
             else
             {
-                gLog.erase(it);
+                it = gLog.erase(it);
             }
         }
 

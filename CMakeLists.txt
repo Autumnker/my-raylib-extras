@@ -1,7 +1,9 @@
 cmake_minimum_required(VERSION 3.16)
-project(my-raylib-extras LANGUAGES CXX)
+project(my-raylib-extras LANGUAGES C CXX)
 
+set(CMAKE_C_STANDARD   11)
 set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_C_STANDARD_REQUIRED   ON)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
@@ -36,25 +38,56 @@ if(WIN32)
 endif()
 
 # ------------------------------------------------------------------
-# Helper — add a single-library example target
+# Helper — add a C-language example target
 #
-# Usage: add_raylib_example(rmouse)
+# Usage: add_c_example(rmouse)
 #
 # Expects:
-#   src/<name>/<name>.h       — the header-only library
-#   examples/<name>/main.cpp     — the example source
+#   src/c/<name>/<name>.h     — the header-only C library
+#   examples/c/<name>/example_<name>.c  — the C example source
 # ------------------------------------------------------------------
-function(add_raylib_example EXAMPLE_NAME)
-    set(EXE_NAME "${EXAMPLE_NAME}_example")
-    add_executable(${EXE_NAME} examples/${EXAMPLE_NAME}/main.cpp)
+function(add_c_example EXAMPLE_NAME)
+    set(EXE_NAME "${EXAMPLE_NAME}_c_example")
+    add_executable(${EXE_NAME} examples/c/${EXAMPLE_NAME}/example_${EXAMPLE_NAME}.c)
 
     set_target_properties(${EXE_NAME} PROPERTIES
         RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        C_STANDARD 11
     )
 
     target_include_directories(${EXE_NAME} PRIVATE
-        src/${EXAMPLE_NAME}       # for "${EXAMPLE_NAME}.h"
-        ${RAYLIB_INCLUDE}        # for "raylib.h"
+        src/c/${EXAMPLE_NAME}       # for "${EXAMPLE_NAME}.h"
+        ${RAYLIB_INCLUDE}         # for "raylib.h"
+    )
+
+    target_link_directories(${EXE_NAME} PRIVATE ${RAYLIB_LIB})
+    target_link_libraries(${EXE_NAME} PRIVATE
+        raylib
+        ${RAYLIB_EXTRA_LIBS}
+    )
+endfunction()
+
+# ------------------------------------------------------------------
+# Helper — add a C++ example target
+#
+# Usage: add_cpp_example(rmouse)
+#
+# Expects:
+#   src/cpp/<name>/<name>.h         — the header-only C++ library
+#   examples/cpp/<name>/example_<name>.cpp  — the C++ example source
+# ------------------------------------------------------------------
+function(add_cpp_example EXAMPLE_NAME)
+    set(EXE_NAME "${EXAMPLE_NAME}_cpp_example")
+    add_executable(${EXE_NAME} examples/cpp/${EXAMPLE_NAME}/example_${EXAMPLE_NAME}.cpp)
+
+    set_target_properties(${EXE_NAME} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}"
+        CXX_STANDARD 17
+    )
+
+    target_include_directories(${EXE_NAME} PRIVATE
+        src/cpp/${EXAMPLE_NAME}        # for "${EXAMPLE_NAME}.h"
+        ${RAYLIB_INCLUDE}           # for "raylib.h"
     )
 
     target_link_directories(${EXE_NAME} PRIVATE ${RAYLIB_LIB})
@@ -65,7 +98,12 @@ function(add_raylib_example EXAMPLE_NAME)
 endfunction()
 
 # ==================================================================
-# Examples — add one line per library below
+# C examples   — add one line per C library below
 # ==================================================================
-add_raylib_example(rmouse)
-# add_raylib_example(rfuture)     # ← uncomment when you create src/rfuture/
+# add_c_example(rmouse)          # ← uncomment when you create src/c/rmouse/
+
+# ==================================================================
+# C++ examples — add one line per C++ library below
+# ==================================================================
+add_cpp_example(rmouse)
+# add_cpp_example(rfuture)       # ← uncomment when you create src/cpp/rfuture/

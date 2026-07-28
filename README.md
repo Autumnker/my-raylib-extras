@@ -4,38 +4,56 @@ A collection of single-header utility libraries for [raylib](https://github.com/
 
 ## Libraries
 
-| Library | Description |
-|---------|-------------|
-| **[rmouse](src/rmouse/)** | Mouse click / double-click / drag detection |
+| Language | Library | Description |
+|----------|---------|-------------|
+| C++ | **[rmouse](src/cpp/rmouse/)** | Mouse click / double-click / drag detection |
 
 ## Structure
 
 ```
 my-raylib-extras/
-├── CMakeLists.txt              # builds all examples
-├── src/                        # header-only libraries
-│   ├── rmouse/
-│   │   ├── rmouse.h
-│   │   └── README.md
-│   └── <future-lib>/
-│       ├── <future-lib>.h
-│       └── README.md
-└── examples/                   # one subdirectory per library
-    ├── rmouse/
-    │   ├── main.cpp
-    │   └── build.bat
-    └── <future-lib>/
-        ├── main.cpp
-        └── build.bat
+├── CMakeLists.txt                  # builds all examples (C / C++)
+├── src/
+│   ├── c/                          # ★ C header-only libraries
+│   │   └── <future-c-lib>/
+│   │       ├── <lib>.h
+│   │       └── README.md
+│   └── cpp/                        # ★ C++ header-only libraries
+│       ├── rmouse/
+│       │   ├── rmouse.h
+│       │   └── README.md
+│       └── <future-cpp-lib>/
+│           ├── <lib>.h
+│           └── README.md
+└── examples/
+    ├── c/                          # ★ C examples (example_<name>.c)
+    │   └── <future-c-example>/
+    │       ├── example_<name>.c
+    │       └── build.bat
+    └── cpp/                        # ★ C++ examples (example_<name>.cpp)
+        ├── rmouse/
+        │   ├── example_rmouse.cpp
+        │   └── build.bat
+        └── <future-cpp-example>/
+            ├── example_<name>.cpp
+            └── build.bat
 ```
 
 ## Adding a new library
 
-1. Create `src/<name>/<name>.h` and `src/<name>/README.md`
-2. Create `examples/<name>/main.cpp`
-3. Add `add_raylib_example(<name>)` to `CMakeLists.txt`
+### C library
 
-That's it — the CMake helper handles include paths and linking automatically.
+1. Create `src/c/<name>/<name>.h` and `src/c/<name>/README.md`
+2. Create `examples/c/<name>/example_<name>.c`
+3. Add `add_c_example(<name>)` to `CMakeLists.txt`
+
+### C++ library
+
+1. Create `src/cpp/<name>/<name>.h` and `src/cpp/<name>/README.md`
+2. Create `examples/cpp/<name>/example_<name>.cpp`
+3. Add `add_cpp_example(<name>)` to `CMakeLists.txt`
+
+That's it — the CMake helpers handle include paths and linking automatically.
 
 ## License
 

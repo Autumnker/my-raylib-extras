@@ -1,9 +1,9 @@
 /*
- * rmouse v1.0 - Mouse click / double-click / drag detection for raylib
+ * rmouse v1.0 - Mouse click / double-click / drag detection for raylib (C++ version)
  *
  * LICENSE: zlib/libpng
  * Copyright (c) 2026 Autumnker
- * 
+ *
  * This software is provided 'as-is', without any express or implied warranty.
  * In no event will the authors be held liable for any damages arising from
  * the use of this software.
@@ -11,20 +11,20 @@
  * Permission is granted to anyone to use this software for any purpose,
  * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
+ *
  * 1. The origin of this software must not be misrepresented; you must not
  *    claim that you wrote the original software. If you use this software
  *    in a product, an acknowledgment in the product documentation would be
  *    appreciated but is not required.
- * 
+ *
  * 2. Altered source versions must be plainly marked as such, and must not
  *    be misrepresented as being the original software.
- * 
+ *
  * 3. This notice may not be removed or altered from any source distribution.
  */
 
-#ifndef RMOUSE_H
-#define RMOUSE_H
+#ifndef RMOUSE_HPP
+#define RMOUSE_HPP
 
 #include "raylib.h"
 #include <cmath>
@@ -139,7 +139,7 @@ private:
 
 } // namespace rmouse
 
-#endif // RMOUSE_H
+#endif // RMOUSE_HPP
 
 // ===================================================================
 // Implementation — compiled only when RMOUSE_IMPLEMENTATION is defined
@@ -247,19 +247,20 @@ void Mouse::UpdateButton(ButtonState& s, MouseButton button)
     // ── 3. Release: classify as click / double-click ──
     if (::IsMouseButtonReleased(button))
     {
+        bool wasDragging = s.isDragging;
         s.isDown = false;
         s.isDragging = false;
         s.lastDragPos = { -1, -1 };
 
-        if (!s.isDragging)
+        // !wasDragging already guarantees dx/dy < DRAG_START_THRESHOLD,
+        // which is smaller than CLICK_POS_TOLERANCE, so position check
+        // is implied.  Only duration needs explicit verification.
+        if (!wasDragging)
         {
-            float dx = std::abs(mx - s.pressPos.x);
-            float dy = std::abs(my - s.pressPos.y);
             double duration = now - s.pressTime;
 
-            // Close position + short duration -> valid click
-            if (dx < CLICK_POS_TOLERANCE && dy < CLICK_POS_TOLERANCE &&
-                duration < CLICK_MAX_DURATION)
+            // Short duration -> valid click
+            if (duration < CLICK_MAX_DURATION)
             {
 
                 // Check whether we are within the double-click window

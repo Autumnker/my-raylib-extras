@@ -6,7 +6,7 @@ A collection of single-header utility libraries for [raylib](https://github.com/
 
 | Language | Library | Description |
 |----------|---------|-------------|
-| C++ | **[rmouse](src/cpp/rmouse/)** | Mouse click / double-click / drag detection |
+| C / C++ | **[rmouse](src/rmouse/)** | Mouse click / double-click / drag detection |
 
 ## Structure
 
@@ -14,44 +14,22 @@ A collection of single-header utility libraries for [raylib](https://github.com/
 my-raylib-extras/
 ├── CMakeLists.txt                  # builds all examples (C / C++)
 ├── src/
-│   ├── c/                          # ★ C header-only libraries
-│   │   └── <future-c-lib>/
-│   │       ├── <lib>.h
-│   │       └── README.md
-│   └── cpp/                        # ★ C++ header-only libraries
-│       ├── rmouse/
-│       │   ├── rmouse.h
-│       │   └── README.md
-│       └── <future-cpp-lib>/
-│           ├── <lib>.h
-│           └── README.md
+│   └── rmouse/
+│       ├── rmouse.hpp             # C++ library
+│       ├── rmouse.h               # C library
+│       └── README.md
 └── examples/
-    ├── c/                          # ★ C examples (example_<name>.c)
-    │   └── <future-c-example>/
-    │       ├── example_<name>.c
-    │       └── build.bat
-    └── cpp/                        # ★ C++ examples (example_<name>.cpp)
-        ├── rmouse/
-        │   ├── example_rmouse.cpp
-        │   └── build.bat
-        └── <future-cpp-example>/
-            ├── example_<name>.cpp
-            └── build.bat
+    └── rmouse/
+        ├── example_rmouse.cpp      # C++ example
+        ├── example_rmouse.c        # C example
+        └── build.bat
 ```
 
 ## Adding a new library
 
-### C library
-
-1. Create `src/c/<name>/<name>.h` and `src/c/<name>/README.md`
-2. Create `examples/c/<name>/example_<name>.c`
-3. Add `add_c_example(<name>)` to `CMakeLists.txt`
-
-### C++ library
-
-1. Create `src/cpp/<name>/<name>.h` and `src/cpp/<name>/README.md`
-2. Create `examples/cpp/<name>/example_<name>.cpp`
-3. Add `add_cpp_example(<name>)` to `CMakeLists.txt`
+1. Create `src/<name>/<name>.hpp` (C++) or `src/<name>/<name>.h` (C) and `src/<name>/README.md`
+2. Create `examples/<name>/example_<name>.cpp` (or `.c`) and optionally `build.bat`
+3. Add `add_cpp_example(<name>)` or `add_c_example(<name>)` to `CMakeLists.txt`
 
 That's it — the CMake helpers handle include paths and linking automatically.
 

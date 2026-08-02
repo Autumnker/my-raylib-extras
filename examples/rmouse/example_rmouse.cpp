@@ -4,14 +4,14 @@
  * Build (MinGW-w64 + raylib 5.5):
  * # Execute in the root directory (my-raylib-extras/)
  * 
- * g++ -std=c++17 examples/rmouse/main.cpp -Isrc/rmouse \
+ * g++ -std=c++17 examples/rmouse/example_rmouse.cpp -Isrc/rmouse \
  *     -I../raylib-5.5_win64_mingw-w64/include \
  *     -L../raylib-5.5_win64_mingw-w64/lib \
  *     -lraylib -lopengl32 -lgdi32 -lwinmm -o rmouse_example
  */
 
 #define RMOUSE_IMPLEMENTATION
-#include "rmouse.h"
+#include "rmouse.hpp"
 #include <cstdarg>
 #include <cstdio>
 #include <string>
